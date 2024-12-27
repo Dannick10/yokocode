@@ -86,6 +86,7 @@ export const useEditor = () => {
   const redirectConsole = (
     setOutputConsole: React.Dispatch<React.SetStateAction<string[]>>
   ) => {
+    const originalLog = console.log;
     console.log = (...args: string[]) => {
       setOutputConsole((prev) => {
         return [...prev, args.join(" ")];
@@ -97,8 +98,8 @@ export const useEditor = () => {
     redirectConsole(setOutputConsole);
     try {
         const jsCode = Languages.javascript.value;
-        const execute = new Function(jsCode);
-        execute()
+        if(jsCode.includes('document.body')) return
+       new Function(jsCode)();
     } catch (error: unknown) {
         if (error instanceof Error) {
          setOutputConsole((prev) => [...prev, `Error: ${error.message}`]);
