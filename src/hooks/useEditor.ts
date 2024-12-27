@@ -86,7 +86,6 @@ export const useEditor = () => {
   const redirectConsole = (
     setOutputConsole: React.Dispatch<React.SetStateAction<string[]>>
   ) => {
-    const originalLog = console.log;
     console.log = (...args: string[]) => {
       setOutputConsole((prev) => {
         return [...prev, args.join(" ")];
