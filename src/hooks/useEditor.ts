@@ -1,62 +1,60 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-interface valuesLanguages {
-    mode: string;
-    value: string;
-    color: string
+interface IvaluesLanguages {
+  mode: string;
+  value: string;
 }
-interface Languages {
-    html: valuesLanguages;
-    css: valuesLanguages;
-    javascript: valuesLanguages;
+interface ILanguages {
+  html: IvaluesLanguages;
+  css: IvaluesLanguages;
+  javascript: IvaluesLanguages;
 }
 export const useEditor = () => {
+  const [Languages, SetLanguages] = useState<ILanguages>({
+    html: {
+      mode: "html",
+      value: "",
+    },
+    css: {
+      mode: "css",
+      value: "",
+    },
+    javascript: {
+      mode: "javascript",
+      value: "",
+    },
+  });
+  const [mobile, setMobile] = useState(false);
+  const [output, setOutput] = useState<string>("");
+  const [viewLanguange, setViewLanguage] = useState<string>("html");
+  const divConsoleRef = useRef<HTMLDivElement>(null);
+  const [outputConsole, setOutputConsole] = useState<string[]>([]);
+  const [viewConsole, setViewConsole] = useState<boolean>(false);
 
-    const [Languages,SetLanguages] = useState<Languages>({
-        html: {
-            mode: "html",
-            value: "",
-            color: "orange"
+  const cleanLanguange = (language: string) => {
+    SetLanguages((prev) => {
+      return {
+        ...prev,
+        [language as keyof ILanguages]: {
+          ...prev[language as keyof ILanguages],
+          value: "",
         },
-        css: {
-            mode: "css",
-            value: "",
-            color: "blue"
-        },
-        javascript: {
-            mode: "javascript",
-            value: "",
-            color: "yellow"
-        }
+      };
     });
+  };
 
-    const cleanLanguange = (language: string) => {
-        SetLanguages((prev) => {
-            return {
-                ...prev,
-                [language as keyof Languages]: {
-                    ...prev[language as keyof Languages],
-                    value: "",
-                },
-            };
-        })
-    
-    }
+  const changeLanguage = (language: string, value: string) => {
+    SetLanguages((prev) => ({
+      ...prev,
+      [language as keyof ILanguages]: {
+        ...prev[language as keyof ILanguages],
+        value,
+      },
+    }));
+  };
 
-    const changeLanguage = (language: string, value: string) => {
-        SetLanguages((prev) => ({
-            ...prev,
-            [language as keyof Languages]: {
-                ...prev[language as keyof Languages],
-                value,
-            },
-        }))    }
-
-    const [output, setOutput] = useState("");
-    const [viewLanguange, setViewLanguage] = useState<string>("html");
-
-    useEffect(() => {
-        const combinedOutput = `
+  useEffect(() => {
+    const combinedOutput = `
           <html>
             <style>${Languages.css.value}</style>
             <body>${Languages.html.value}</body>
@@ -64,15 +62,71 @@ export const useEditor = () => {
           </html>
         `;
 
-        setOutput(combinedOutput);
-      }, [Languages]);
+    setOutput(combinedOutput);
+  }, [Languages]);
 
-    return {
-        output,
-        Languages,
-        changeLanguage,
-        viewLanguange,
-        setViewLanguage,
-        cleanLanguange
+  const verifyMobile = (width: number) => {
+    setMobile(width < 768);
+  };
+
+  const handleResizeOrLoad = () => {
+    verifyMobile(window.innerWidth);
+  };
+
+  useEffect(() => {
+    handleResizeOrLoad();
+    window.addEventListener("resize", handleResizeOrLoad);
+    window.addEventListener("load", handleResizeOrLoad);
+    return () => {
+      window.removeEventListener("resize", handleResizeOrLoad);
+      window.removeEventListener("load", handleResizeOrLoad);
+    };
+  }, []);
+
+  const redirectConsole = (
+    setOutputConsole: React.Dispatch<React.SetStateAction<string[]>>
+  ) => {
+    console.log = (...args: string[]) => {
+      setOutputConsole((prev) => {
+        return [...prev, args.join(" ")];
+      });
+    };
+  };
+
+  const executeCode = (Languages: ILanguages, setOutputConsole: React.Dispatch<React.SetStateAction<string[]>>) => {
+    redirectConsole(setOutputConsole);
+    try {
+        const jsCode = Languages.javascript.value;
+        const execute = new Function(jsCode);
+        execute()
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+         setOutputConsole((prev) => [...prev, `Error: ${error.message}`]);
+        }
+      } 
     }
-}
+
+    useEffect(() => {
+        if (divConsoleRef.current) {
+            divConsoleRef.current.scrollTop = divConsoleRef.current.scrollHeight;
+          }
+        executeCode(Languages, setOutputConsole);
+    }, [Languages.javascript.value]);
+
+  
+
+  return {
+    output,
+    Languages,
+    changeLanguage,
+    viewLanguange,
+    setViewLanguage,
+    cleanLanguange,
+    mobile,
+    divConsoleRef,
+    outputConsole,
+    setOutputConsole,
+    viewConsole, 
+    setViewConsole,
+  };
+};
