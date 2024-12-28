@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 interface IvaluesLanguages {
   mode: string;
@@ -27,9 +27,6 @@ export const useEditor = () => {
   const [mobile, setMobile] = useState(false);
   const [output, setOutput] = useState<string>("");
   const [viewLanguange, setViewLanguage] = useState<string>("html");
-  const divConsoleRef = useRef<HTMLDivElement>(null);
-  const [outputConsole, setOutputConsole] = useState<string[]>([]);
-  const [viewConsole, setViewConsole] = useState<boolean>(false);
 
   const cleanLanguange = (language: string) => {
     SetLanguages((prev) => {
@@ -83,37 +80,6 @@ export const useEditor = () => {
     };
   }, []);
 
-  const redirectConsole = (
-    setOutputConsole: React.Dispatch<React.SetStateAction<string[]>>
-  ) => {
-    console.log = (...args: string[]) => {
-      setOutputConsole((prev) => {
-        return [...prev, args.join(" ")];
-      });
-    };
-  };
-
-  const executeCode = (Languages: ILanguages, setOutputConsole: React.Dispatch<React.SetStateAction<string[]>>) => {
-    redirectConsole(setOutputConsole);
-    try {
-        const jsCode = Languages.javascript.value;
-        if(jsCode.includes('document.body')) return
-       new Function(jsCode)();
-    } catch (error: unknown) {
-        if (error instanceof Error) {
-         setOutputConsole((prev) => [...prev, `Error: ${error.message}`]);
-        }
-      } 
-    }
-
-    useEffect(() => {
-        if (divConsoleRef.current) {
-            divConsoleRef.current.scrollTop = divConsoleRef.current.scrollHeight;
-          }
-        executeCode(Languages, setOutputConsole);
-    }, [Languages.javascript.value]);
-
-  
 
   return {
     output,
@@ -123,10 +89,5 @@ export const useEditor = () => {
     setViewLanguage,
     cleanLanguange,
     mobile,
-    divConsoleRef,
-    outputConsole,
-    setOutputConsole,
-    viewConsole, 
-    setViewConsole,
   };
 };
