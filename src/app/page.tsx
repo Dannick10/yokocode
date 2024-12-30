@@ -2,13 +2,20 @@
 
 import { IoMdSettings } from "react-icons/io";
 import Ace from "react-ace";
+import ace from "ace-builds";
 import "ace-builds/src-noconflict/mode-html";
 import "ace-builds/src-noconflict/mode-css";
 import "ace-builds/src-noconflict/mode-javascript";
+import "ace-builds/src-noconflict/theme-twilight";
 import "ace-builds/src-noconflict/ext-language_tools";
-import { useEditor } from "@/hooks/useEditor";
+import "ace-builds/src-noconflict/worker-html";
+import "ace-builds/src-noconflict/worker-css";
+import "ace-builds/src-noconflict/worker-javascript";
 
-import useTheme from "@/hooks/useTheme";
+ace.config.set("basePath", "/node_modules/ace-builds/src-noconflict");
+import { useEditor } from "@/hooks/useEditor";
+import useSettings from "@/hooks/useSettings";
+import Settings from "@/components/Settings";
 
 export default function Home() {
   const {
@@ -18,16 +25,23 @@ export default function Home() {
     viewLanguange,
     setViewLanguage,
     mobile,
+    pushExternal,
+    RemoveExternalLinks,
+    popExternal
   } = useEditor();
 
-  const { theme } = useTheme();
+  const {
+    InputSettings, 
+    SetInputSettings,
+    SetViewSettings,
+    viewSettings
+  } = useSettings()
 
   return (
     <div className="bg-zinc-200 text-black flex flex-col h-screen ">
       <div className="flex flex-col  py-2 bg-zinc-900">
-        <p className="text-white px-2">{theme}</p>
         <div className="flex justify-between items-center  gap-2 bg-zinc-950 mx-2 px-2">
-          <div className="flex gap-2 md:justify-around flex-1 ">
+          <div className="flex gap-2 md:justify-around flex-1  select-none">
             {Object.values(Languages).map((language) => (
               <div key={language.mode}>
                 <p
@@ -47,9 +61,25 @@ export default function Home() {
           </div>
 
           <div className="flex justify-end cursor-pointer text-white hover:rotate-90 transition-all duration-100">
+            <span onClick={() => SetViewSettings(!viewSettings)}>
             <IoMdSettings />
+            </span>
           </div>
         </div>
+            {viewSettings &&
+            <Settings 
+            SetInputSettings={SetInputSettings}
+            InputSettings={InputSettings}
+            SetviewSettings={SetViewSettings}
+            viewSettings={viewSettings}
+            Language={Languages}
+            viewLanguange={viewLanguange}
+            popExternal={popExternal}
+            SetviewLanguage={(value) => setViewLanguage(value)}
+            pushExternal={pushExternal}
+            RemoveExternalLinks={RemoveExternalLinks}
+            />
+          }
 
         <div className="flex items-start px-2 min-h-[80px] h-[250px] max-h-[250px]  overflow-y-scroll resize-y">
           {Object.values(Languages).map((language) => (
@@ -58,10 +88,10 @@ export default function Home() {
                 <Ace
                   key={language.mode}
                   mode={language.mode}
-                  theme={theme}
+                  theme={'twilight'}
                   value={language.value}
                   onChange={(value) => changeLanguage(language.mode, value)}
-                  name={language.mode}
+                  name={`ace-editor-${language.mode}`}
                   editorProps={{ $blockScrolling: true }}
                   enableLiveAutocompletion={true}
                   enableBasicAutocompletion={true}
@@ -79,10 +109,10 @@ export default function Home() {
                 <Ace
                   key={language.mode}
                   mode={language.mode}
-                  theme={theme}
+                  theme={'twilight'}
                   value={language.value}
                   onChange={(value) => changeLanguage(language.mode, value)}
-                  name={language.mode}
+                  name={`ace-editor-${language.mode}`}
                   editorProps={{ $blockScrolling: true }}
                   enableLiveAutocompletion={true}
                   enableBasicAutocompletion={true}
@@ -96,7 +126,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="h-full w-full ">
+      <div className="h-full w-full select-none">
         <iframe
           srcDoc={output}
           title="output"
