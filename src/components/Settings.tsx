@@ -29,7 +29,7 @@ const Settings = ({
 }: ISettings) => {
   return (
     <div className="w-full h-full absolute top-0 left-0 z-30 flex justify-center items-center text-white">
-      <div className="bg-zinc-900 border-2 border-zinc-200 w-1/3 h-[500px] rounded-lg overflow-hidden">
+      <div className="bg-zinc-900 border-2 border-zinc-200  lg:w-[500px] w-5/6 h-[500px] rounded-lg overflow-hidden">
         <header className="border-b mx-2 p-2 rounded-t-lg flex items-center justify-between  px-2 py-3">
           <h1 className="text-center font-bold text-sm">YokoCode</h1>
           <span
