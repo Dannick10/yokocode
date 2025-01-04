@@ -93,8 +93,20 @@ export const templates: Itemplates = {
   vueJS: () => ({
     html: {
       mode: "html",
-      value: "",
-      external: [],
+      value: `
+<div id="app">
+  <h1 class="text-center text-2xl">Hello World in {{message}}</h1>
+</div>
+<script>
+      new Vue({
+        el: '#app',
+        data: {
+          message: 'Hello Vue!'
+        }
+      });
+</script>
+          `,
+      external: [`<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>`],
     },
     css: {
       mode: "css",
@@ -103,20 +115,7 @@ export const templates: Itemplates = {
     },
     javascript: {
       mode: "javascript",
-      value: `
-  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
-  <div id="app">
-    <h1 class="text-center text-2xl">Hello World in Vue</h1>
-  </div>
-  <script>
-    new Vue({
-      el: '#app',
-      data: {
-        message: 'Hello Vue!'
-      }
-    });
-  </script>
-        `,
+      value: ``,
       external: [],
     },
   }),
