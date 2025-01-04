@@ -1,139 +1,69 @@
 "use client";
 
-import { IoMdSettings } from "react-icons/io";
-import Ace from "react-ace";
-import ace from "ace-builds";
-import "ace-builds/src-noconflict/mode-html";
-import "ace-builds/src-noconflict/mode-css";
-import "ace-builds/src-noconflict/mode-javascript";
-import "ace-builds/src-noconflict/theme-twilight";
-import "ace-builds/src-noconflict/ext-language_tools";
-import "ace-builds/src-noconflict/worker-html";
-import "ace-builds/src-noconflict/worker-css";
-import "ace-builds/src-noconflict/worker-javascript";
+import React from "react";
+import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import { GiPlayButton } from "react-icons/gi";
+import { templatesTitle } from "./editor/data/templates";
 
-ace.config.set("basePath", "/node_modules/ace-builds/src-noconflict");
-import { useEditor } from "@/hooks/useEditor";
-import useSettings from "@/hooks/useSettings";
-import Settings from "@/components/Settings";
+const Page = () => {
+  const router = useRouter();
 
-export default function Home() {
-  const {
-    changeLanguage,
-    output,
-    Languages,
-    viewLanguange,
-    setViewLanguage,
-    mobile,
-    pushExternal,
-    RemoveExternalLinks,
-    popExternal
-  } = useEditor();
-
-  const {
-    InputSettings, 
-    SetInputSettings,
-    SetViewSettings,
-    viewSettings
-  } = useSettings()
+  const handleAcessEditor = (id: string) => {
+    router.push(`/editor/create?id=${id}`);
+  };
 
   return (
-    <div className="bg-zinc-200 text-black flex flex-col h-screen ">
-      <div className="flex flex-col  py-2 bg-zinc-900">
-        <div className="flex justify-between items-center  gap-2 bg-zinc-950 mx-2 px-2">
-          <div className="flex gap-2 md:justify-around flex-1  select-none">
-            {Object.values(Languages).map((language) => (
-              <div key={language.mode}>
-                <p
-                  className={`text-white rounded-sm font-bold px-2 cursor-pointer w-24 text-center duration-200 transition-opacity ${
-                    language.mode !== viewLanguange && mobile && "opacity-15 "
-                  }
-                ${
-                  language.mobile === viewLanguange && mobile && "bg-zinc-800"
-                }    
-                `}
-                  onClick={() => setViewLanguage(language.mode)}
-                >
-                  {language.mode}
-                </p>
-              </div>
-            ))}
-          </div>
-
-          <div className="flex justify-end cursor-pointer text-white hover:rotate-90 transition-all duration-100">
-            <span onClick={() => SetViewSettings(!viewSettings)}>
-            <IoMdSettings />
-            </span>
-          </div>
+    <div className="bg-zinc-950 text-zinc-200 flex flex-col items-center py-10 p-4 justify-center min-h-screen  ">
+      <div className="space-y-4 text-center">
+        <div className=" relative flex items-center justify-center overflow-hidden  h-6 w-full">
+          <motion.div 
+           initial={{ y: -30 }}
+           transition={{ type: "spring", duration: 0.6 }}
+           whileHover={{
+            y: 28
+           }}
+           animate={{ y: 0 }}
+          className="flex justify-start items-start  flex-col">
+            <h2 className="text-2xl font-bold ">
+              YOKOCODE
+            </h2>
+            <h2 className="text-2xl font-bold ">
+              YOKOCODE
+            </h2>
+            <h2 className="text-2xl font-bold  ">
+              YOKOCODE
+            </h2>
+          </motion.div>
         </div>
-            {viewSettings &&
-            <Settings 
-            SetInputSettings={SetInputSettings}
-            InputSettings={InputSettings}
-            SetviewSettings={SetViewSettings}
-            viewSettings={viewSettings}
-            Language={Languages}
-            viewLanguange={viewLanguange}
-            popExternal={popExternal}
-            SetviewLanguage={(value) => setViewLanguage(value)}
-            pushExternal={pushExternal}
-            RemoveExternalLinks={RemoveExternalLinks}
-            />
-          }
-
-        <div className="flex items-start px-2 min-h-[80px] h-[250px] max-h-[250px]  overflow-y-scroll resize-y">
-          {Object.values(Languages).map((language) => (
-            <>
-              {language.mode === viewLanguange && mobile && (
-                <Ace
-                  key={language.mode}
-                  mode={language.mode}
-                  theme={'twilight'}
-                  value={language.value}
-                  onChange={(value) => changeLanguage(language.mode, value)}
-                  name={`ace-editor-${language.mode}`}
-                  editorProps={{ $blockScrolling: true }}
-                  enableLiveAutocompletion={true}
-                  enableBasicAutocompletion={true}
-                  enableSnippets={true}
-                  width="100%"
-                  height="100%"
-                />
-              )}
-            </>
-          ))}
-
-          {Object.values(Languages).map((language) => (
-            <>
-              {!mobile && (
-                <Ace
-                  key={language.mode}
-                  mode={language.mode}
-                  theme={'twilight'}
-                  value={language.value}
-                  onChange={(value) => changeLanguage(language.mode, value)}
-                  name={`ace-editor-${language.mode}`}
-                  editorProps={{ $blockScrolling: true }}
-                  enableLiveAutocompletion={true}
-                  enableBasicAutocompletion={true}
-                  enableSnippets={true}
-                  width="100%"
-                  height="100%"
-                />
-              )}
-            </>
-          ))}
-        </div>
+        <p className="text-xl">Escolha um template para começar</p>
       </div>
-
-      <div className="h-full w-full select-none">
-        <iframe
-          srcDoc={output}
-          title="output"
-          sandbox="allow-scripts"
-          className="w-full h-full"
-        />
+      <div className="mt-4 py-10 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 flex-wrap gap-8  px-4 max-w-[800px]">
+        {templatesTitle.map((template, index) => (
+          <motion.div
+            initial={{ scale: 0 }}
+            transition={{ type: "spring", duration: ".1", delay: index / 30}}
+            animate={{ scale: 1 }}
+            className="border w-40 flex p-2 rounded items-center justify-between cursor-pointer hover:bg-slate-200 hover:text-zinc-950 group transition-all"
+            onClick={() => handleAcessEditor(template.stack)}
+            key={template.stack}
+          >
+            <p className="text-sm font-medium group-hover:hidden transition-all">{template.stack}</p>          
+            <span className="text-2xl">
+              <template.svg />
+            </span>
+            <motion.span 
+            initial={{x: -30}}
+            whileInView={{x:0}}
+            transition={{type: "tween", duration: .2}}
+            className="text-sm font-medium hidden group-hover:block transition-all">
+              <GiPlayButton/>
+            </motion.span>
+          </motion.div>
+        ))}
       </div>
     </div>
   );
-}
+};
+
+export default Page;

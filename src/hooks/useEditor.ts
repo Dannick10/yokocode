@@ -1,3 +1,4 @@
+import { templates } from "@/app/editor/data/templates";
 import { ILanguages } from "@/interfaces/LanguageInterface";
 import { useEffect, useState } from "react";
 
@@ -36,7 +37,7 @@ export const useEditor = () => {
 
     const formattedLink = formatLink(value);
     if (!formattedLink) return;
-  
+
     SetLanguages((prev) => ({
       ...prev,
       [language as keyof ILanguages]: {
@@ -62,7 +63,7 @@ export const useEditor = () => {
         ],
       },
     }));
-  }
+  };
 
   const RemoveExternalLinks = (language: string) => {
     return language.replace(
@@ -70,7 +71,6 @@ export const useEditor = () => {
       ""
     );
   };
-
 
   const changeLanguage = (language: string, value: string) => {
     SetLanguages((prev) => ({
@@ -121,6 +121,15 @@ export const useEditor = () => {
     };
   }, []);
 
+  const templateProject = (id: string) => {
+    if(templates[id]) {
+      SetLanguages(templates[id]())
+    } else {
+      SetLanguages(templates["javascript"]())
+    }
+    
+  };
+
   return {
     output,
     Languages,
@@ -131,5 +140,6 @@ export const useEditor = () => {
     RemoveExternalLinks,
     pushExternal,
     popExternal,
+    templateProject,
   };
 };
