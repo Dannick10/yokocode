@@ -93,20 +93,24 @@ export const templates: Itemplates = {
   vueJS: () => ({
     html: {
       mode: "html",
-      value: `
-<div id="app">
-  <h1 class="text-center text-2xl">Hello World in {{message}}</h1>
+      value: `<div id="app">
+   <h1 class="text-center text-2xl">Hello World in {{ message }}</h1>
 </div>
+    
 <script>
-      new Vue({
-        el: '#app',
-        data: {
+    const app = Vue.createApp({
+      data() {
+        return {
           message: 'Hello Vue!'
-        }
-      });
+        };
+       }
+    });
+    
+  app.mount('#app');
 </script>
+    
           `,
-      external: [`<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>`],
+      external: [`<script src="https://cdn.jsdelivr.net/npm/vue@3"></script>`],
     },
     css: {
       mode: "css",
